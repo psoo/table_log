@@ -1,13 +1,4 @@
---
--- table_log () -- log changes to another table
---
---
--- see README.table_log for details
---
---
--- written by Andreas ' ads' Scherbaum (ads@pgug.de)
---
---
+CREATE EXTENSION table_log;
 
 -- drop old trigger
 DROP TRIGGER test_log_chg ON test; -- ignore any error
@@ -31,40 +22,21 @@ CREATE SEQUENCE test_log_id;
 SELECT SETVAL('test_log_id', 1, FALSE);
 ALTER TABLE test_log ALTER COLUMN trigger_id SET DEFAULT NEXTVAL('test_log_id');
 
-
-
--- create function
-CREATE FUNCTION table_log ()
-    RETURNS TRIGGER
-    AS 'MODULE_PATHNAME' LANGUAGE C;
-CREATE FUNCTION "table_log_restore_table" (VARCHAR, VARCHAR, CHAR, CHAR, CHAR, TIMESTAMPTZ, CHAR, INT, INT)
-    RETURNS VARCHAR
-    AS 'MODULE_PATHNAME', 'table_log_restore_table' LANGUAGE C;
-CREATE FUNCTION "table_log_restore_table" (VARCHAR, VARCHAR, CHAR, CHAR, CHAR, TIMESTAMPTZ, CHAR, INT)
-    RETURNS VARCHAR
-    AS 'MODULE_PATHNAME', 'table_log_restore_table' LANGUAGE C;
-CREATE FUNCTION "table_log_restore_table" (VARCHAR, VARCHAR, CHAR, CHAR, CHAR, TIMESTAMPTZ, CHAR)
-    RETURNS VARCHAR
-    AS 'MODULE_PATHNAME', 'table_log_restore_table' LANGUAGE C;
-CREATE FUNCTION "table_log_restore_table" (VARCHAR, VARCHAR, CHAR, CHAR, CHAR, TIMESTAMPTZ)
-    RETURNS VARCHAR
-    AS 'MODULE_PATHNAME', 'table_log_restore_table' LANGUAGE C;
-
 -- create trigger
 CREATE TRIGGER test_log_chg AFTER UPDATE OR INSERT OR DELETE ON test FOR EACH ROW
                EXECUTE PROCEDURE table_log();
 
 -- test trigger
 INSERT INTO test VALUES (1, 'name');
-SELECT * FROM test;
-SELECT * FROM test_log;
+SELECT id, name FROM test;
+SELECT id, name, trigger_mode, trigger_tuple, trigger_id FROM test_log;
 UPDATE test SET name='other name' WHERE id=1;
-SELECT * FROM test;
-SELECT * FROM test_log;
+SELECT id, name FROM test;
+SELECT id, name, trigger_mode, trigger_tuple, trigger_id FROM test_log;
 
 -- create restore table
 SELECT table_log_restore_table('test', 'id', 'test_log', 'trigger_id', 'test_recover', NOW());
-SELECT * FROM test_recover;
+SELECT id, name FROM test_recover;
 
-DROP TABLE test_log;
 DROP TABLE test;
+DROP TABLE test_log;

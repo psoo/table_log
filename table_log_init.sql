@@ -25,12 +25,12 @@ BEGIN
                 ||'', trigger_user VARCHAR(32) NOT NULL'';
             do_log_user := 1;
             IF level <> 5 THEN
-                RAISE EXCEPTION 
+                RAISE EXCEPTION
                     ''table_log_init: First arg has to be 3, 4 or 5.'';
             END IF;
         END IF;
     END IF;
-    
+
     EXECUTE ''CREATE TABLE ''||log_qq
           ||''(LIKE ''||orig_qq
           ||'', trigger_mode VARCHAR(10) NOT NULL''
@@ -38,7 +38,7 @@ BEGIN
           ||'', trigger_changed TIMESTAMPTZ NOT NULL''
           ||level_create
           ||'')'';
-            
+
     EXECUTE ''CREATE TRIGGER "table_log_trigger" AFTER UPDATE OR INSERT OR DELETE ON ''
           ||orig_qq||'' FOR EACH ROW EXECUTE PROCEDURE table_log(''
           ||quote_literal(log_name)||'',''
@@ -81,7 +81,7 @@ DECLARE
     log_schema   ALIAS FOR $4;
 BEGIN
     PERFORM table_log_init(level, orig_schema, orig_name, log_schema,
-        CASE WHEN orig_schema=log_schema 
+        CASE WHEN orig_schema=log_schema
             THEN orig_name||''_log'' ELSE orig_name END);
     RETURN;
 END;

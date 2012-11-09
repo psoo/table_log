@@ -1,0 +1,4 @@
+comment = 'Module to log changes on tables'
+default_version = '0.5'
+module_pathname = '$libdir/table_log'
+relocatable = false

@@ -1,13 +1,10 @@
 MODULES = table_log
-DATA_built = table_log.sql
+EXTENSION = table_log
+DATA = table_log--0.5.sql table_log_init.sql table_log--unpackaged--0.5.sql
+## keep it for non-EXTENSION installations
+DATA_built = table_log.sql uninstall_table_log.sql
 DOCS = README.table_log
+REGRESS=table_log
 
-ifdef USE_PGXS
-  PGXS := $(shell pg_config --pgxs)
-  include $(PGXS)
-else
-  subdir = contrib/table_log
-  top_builddir = ../..
-  include $(top_builddir)/src/Makefile.global
-  include $(top_srcdir)/contrib/contrib-global.mk
-endif
+PGXS := $(shell pg_config --pgxs)
+include $(PGXS)

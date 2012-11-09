@@ -1,0 +1,31 @@
+ALTER EXTENSION table_log ADD FUNCTION table_log();
+ALTER EXTENSION table_log ADD FUNCTION table_log_restore_table(varchar,
+                                                               varchar,
+                                                               char,
+                                                               char,
+                                                               char,
+                                                               timestamp with time zone,
+                                                               char,
+                                                               integer,
+                                                               integer);
+ALTER EXTENSION table_log ADD FUNCTION table_log_restore_table(varchar,
+                                                               varchar,
+                                                               char,
+                                                               char,
+                                                               char,
+                                                               timestamp with time zone,
+                                                               char,
+                                                               integer);
+ALTER EXTENSION table_log ADD FUNCTION table_log_restore_table(varchar,
+                                                               varchar,
+                                                               char,
+                                                               char,
+                                                               char,
+                                                               timestamp with time zone,
+                                                               char);
+ALTER EXTENSION table_log ADD FUNCTION table_log_restore_table(varchar,
+                                                               varchar,
+                                                               char,
+                                                               char,
+                                                               char,
+                                                               timestamp with time zone);
