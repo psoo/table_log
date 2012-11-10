@@ -9,9 +9,3 @@
  *
  */
 
-/*
-#define TABLE_LOG_DEBUG 1
-*/
-/*
-#define TABLE_LOG_DEBUG_QUERY 1
-*/
