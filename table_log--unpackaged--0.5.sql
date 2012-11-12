@@ -29,3 +29,18 @@ ALTER EXTENSION table_log ADD FUNCTION table_log_restore_table(varchar,
                                                                char,
                                                                char,
                                                                timestamp with time zone);
+
+ALTER EXTENSION table_log ADD FUNCTION table_log_init(integer,
+                                                      text,
+                                                      text,
+                                                      text,
+                                                      text);
+ALTER EXTENSION table_log ADD FUNCTION table_log_init(integer,
+                                                      text);
+ALTER EXTENSION table_log ADD FUNCTION table_log_init(integer,
+                                                      text,
+                                                      text);
+ALTER EXTENSION table_log ADD FUNCTION table_log_init(integer,
+                                                      text,
+                                                      text,
+                                                      text);

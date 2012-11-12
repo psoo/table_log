@@ -74,3 +74,82 @@ SELECT id, name FROM test_recover;
 
 DROP TABLE test;
 DROP TABLE test_log;
+-- test table_log_init with all arguments
+-- trigger_user and trigger_changed might differ, so ignore it
+SET client_min_messages TO warning;
+CREATE TABLE test(id integer, name text);
+SELECT table_log_init(5, 'test');
+ table_log_init 
+----------------
+ 
+(1 row)
+
+INSERT INTO test VALUES(1, 'joe');
+INSERT INTO test VALUES(2, 'barney');
+INSERT INTO test VALUES(3, 'monica');
+UPDATE test SET name = 'veronica' WHERE id = 3;
+DELETE FROM test WHERE id = 1;
+SELECT id, name, trigger_mode, trigger_tuple, trigger_id FROM test_log;
+ id |   name   | trigger_mode | trigger_tuple | trigger_id 
+----+----------+--------------+---------------+------------
+  1 | joe      | INSERT       | new           |          1
+  2 | barney   | INSERT       | new           |          2
+  3 | monica   | INSERT       | new           |          3
+  3 | monica   | UPDATE       | old           |          4
+  3 | veronica | UPDATE       | new           |          5
+  1 | joe      | DELETE       | old           |          6
+(6 rows)
+
+DROP TABLE test;
+DROP TABLE test_log;
+CREATE TABLE test(id integer, name text);
+SELECT table_log_init(4, 'test');
+ table_log_init 
+----------------
+ 
+(1 row)
+
+INSERT INTO test VALUES(1, 'joe');
+INSERT INTO test VALUES(2, 'barney');
+INSERT INTO test VALUES(3, 'monica');
+UPDATE test SET name = 'veronica' WHERE id = 3;
+DELETE FROM test WHERE id = 1;
+SELECT id, name, trigger_mode, trigger_tuple, trigger_id FROM test_log;
+ id |   name   | trigger_mode | trigger_tuple | trigger_id 
+----+----------+--------------+---------------+------------
+  1 | joe      | INSERT       | new           |          1
+  2 | barney   | INSERT       | new           |          2
+  3 | monica   | INSERT       | new           |          3
+  3 | monica   | UPDATE       | old           |          4
+  3 | veronica | UPDATE       | new           |          5
+  1 | joe      | DELETE       | old           |          6
+(6 rows)
+
+DROP TABLE test;
+DROP TABLE test_log;
+CREATE TABLE test(id integer, name text);
+SELECT table_log_init(3, 'test');
+ table_log_init 
+----------------
+ 
+(1 row)
+
+INSERT INTO test VALUES(1, 'joe');
+INSERT INTO test VALUES(2, 'barney');
+INSERT INTO test VALUES(3, 'monica');
+UPDATE test SET name = 'veronica' WHERE id = 3;
+DELETE FROM test WHERE id = 1;
+SELECT id, name, trigger_mode, trigger_tuple FROM test_log;
+ id |   name   | trigger_mode | trigger_tuple 
+----+----------+--------------+---------------
+  1 | joe      | INSERT       | new
+  2 | barney   | INSERT       | new
+  3 | monica   | INSERT       | new
+  3 | monica   | UPDATE       | old
+  3 | veronica | UPDATE       | new
+  1 | joe      | DELETE       | old
+(6 rows)
+
+DROP TABLE test;
+DROP TABLE test_log;
+RESET client_min_messages;
