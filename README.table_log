@@ -61,17 +61,21 @@ is" without express or implied warranty.
 
 3. Installation:
 
-Hint: If you want debugging output, activate the TABLE_LOG_DEBUG
-      and/or TABLE_LOG_DEBUG_QUERY defines in the head of
-      table_log.h before compiling
-
-
 Build table_log:
 
 make USE_PGXS=1
 (and as root)
 make USE_PGXS=1 install
 
+If you are using a version >= 9.1 of PostgreSQL, you can use the new
+regression tests to verify the working state of the module:
+
+USE_PGXS=1 make installcheck
+
+Since the regression checks require the extension infrastructure, this won't work
+on version below 9.1.
+
+3.1 Pre-9.1 installation procedure
 
 The pg_config tool must be in your $PATH for installation and
 you must have the PostgreSQL development packages installed.
@@ -102,12 +106,49 @@ CREATE FUNCTION "table_log_restore_table" (VARCHAR, VARCHAR, CHAR, CHAR, CHAR, T
     RETURNS VARCHAR
     AS '$libdir/table_log', 'table_log_restore_table' LANGUAGE 'C';
 
+There's also a script available in <PATH_TO_YOUR_PGSQL>/share/contrib, which contains all
+required function definitions plus some regression tests, for example:
+
+psql -f <PATH_TO_YOUR_PGSQL>/share/contrib/table_log.sql
 
 Install table_log_init() by running 'psql < table_log_init.sql'.
 This function does all the work which is necessary for creating a
 logging table.
 
+NOTE:
 
+Currently the Makefile doesn't distinguish between extension and contrib
+installation procedures and will install table_log--x.x.sql and control files
+in pre-9.1 versions nevertheless.
+This might get solved in the future, but don't use those scripts in pre-9.1
+installations.
+
+3.2 Installation procedure with versions >= 9.1
+
+Starting with PostgreSQL 9.1 you should use the new extension
+infrastructure. table_log supports this starting with version 0.5. After
+compiling and installing the module, all you need to do is to connect
+to the target database and issue the following command:
+
+CREATE EXTENSION table_log;
+
+This will install all functions including table_log_init() into the
+public schema.
+
+NOTE: The old contrib scripts are going to be installed, still. We currently don't have
+distinguished the installation procedure version-wise within the Makefile, so don't
+get confused if you still find the old table_log.sql scripts in share/extension
+directories.
+
+3.3 Upgrading from earlier installations to the new extension infrastructure
+
+If you are upgrading from an earlier pre-9.1 installation, and you want to use
+the new extension infrastructure, you could use the unpackaged creation
+procedure to migrate an existing table_log installation within a database into
+an extension. To accomplish this, you need to execute the following command
+in the new 9.1+ database (of course, after installing the new version of table_log):
+
+CREATE EXTENSION table_log FROM unpackaged;
 
 4. Documentation:
 
