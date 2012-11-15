@@ -40,6 +40,7 @@ SELECT id, name FROM test_recover;
 
 DROP TABLE test;
 DROP TABLE test_log;
+DROP TABLE test_recover;
 
 -- test table_log_init with all arguments
 -- trigger_user and trigger_changed might differ, so ignore it
@@ -78,6 +79,24 @@ DELETE FROM test WHERE id = 1;
 SELECT id, name, trigger_mode, trigger_tuple FROM test_log;
 DROP TABLE test;
 DROP TABLE test_log;
+
+-- Check table_log_restore_table()
+
+CREATE TABLE test(id integer, name text);
+ALTER TABLE test ADD PRIMARY KEY(id);
+SELECT table_log_init(5, 'test');
+INSERT INTO test VALUES(1, 'joe');
+INSERT INTO test VALUES(2, 'barney');
+INSERT INTO test VALUES(3, 'monica');
+UPDATE test SET name = 'veronica' WHERE id = 3;
+DELETE FROM test WHERE id = 1;
+
+SELECT table_log_restore_table('test', 'id', 'test_log', 'trigger_id', 'test_recover', NOW(), '2', NULL::int, 1);
+SELECT id, name FROM test_recover;
+
+DROP TABLE test;
+DROP TABLE test_log;
+DROP TABLE test_recover;
 
 RESET client_min_messages;
 
