@@ -1,4 +1,5 @@
 CREATE EXTENSION table_log;
+SET client_min_messages TO warning;
 
 -- drop old trigger
 DROP TRIGGER test_log_chg ON test; -- ignore any error

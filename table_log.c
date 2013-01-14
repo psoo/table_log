@@ -11,20 +11,22 @@
 
 #include "table_log.h"
 
+#include <ctype.h>		/* tolower () */
+#include <string.h>		/* strlen() */
+
 #include "postgres.h"
 #include "fmgr.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
 #include "commands/trigger.h"	/* -"- and triggers */
 #include "mb/pg_wchar.h"	/* support for the quoting functions */
-#include <ctype.h>		/* tolower () */
-#include <string.h>		/* strlen() */
 #include "miscadmin.h"
+#include "lib/stringinfo.h"
 #include "utils/formatting.h"
 #include "utils/builtins.h"
 #include <utils/lsyscache.h>
 #include <utils/rel.h>
 #include <utils/timestamp.h>
-#include <funcapi.h>
+#include "funcapi.h"
 
 /* for PostgreSQL >= 8.2.x */
 #ifdef PG_MODULE_MAGIC
@@ -1014,13 +1016,14 @@ Datum table_log_restore_table(PG_FUNCTION_ARGS)
 		}
 	}
 
+	/* close SPI connection */
+	SPI_finish();
+
 	elog(DEBUG2, "table_log_restore_table() done, results in: %s", table_restore);
 
 	/* convert string to VarChar for result */
 	return_name = DatumGetVarCharP(DirectFunctionCall2(varcharin, CStringGetDatum(table_restore), Int32GetDatum(strlen(table_restore) + VARHDRSZ)));
 
-	/* close SPI connection */
-	SPI_finish();
 	/* and return the name of the restore table */
 	PG_RETURN_VARCHAR_P(return_name);
 }

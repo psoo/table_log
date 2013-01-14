@@ -1,4 +1,5 @@
 CREATE EXTENSION table_log;
+SET client_min_messages TO warning;
 -- drop old trigger
 DROP TRIGGER test_log_chg ON test; -- ignore any error
 ERROR:  relation "test" does not exist
@@ -10,7 +11,6 @@ CREATE TABLE test (
                                             PRIMARY KEY,
   name                  VARCHAR(20)         NOT NULL
 );
-NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "test_pkey" for table "test"
 -- create the table without data from demo table
 DROP TABLE test_log; -- ignore any error
 ERROR:  table "test_log" does not exist
@@ -61,9 +61,9 @@ SELECT id, name, trigger_mode, trigger_tuple, trigger_id FROM test_log;
 
 -- create restore table
 SELECT table_log_restore_table('test', 'id', 'test_log', 'trigger_id', 'test_recover', NOW());
-                                                                                                                 table_log_restore_table                                                                                                                  
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- \x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F
+ table_log_restore_table 
+-------------------------
+ test_recover
 (1 row)
 
 SELECT id, name FROM test_recover;
@@ -168,9 +168,9 @@ INSERT INTO test VALUES(3, 'monica');
 UPDATE test SET name = 'veronica' WHERE id = 3;
 DELETE FROM test WHERE id = 1;
 SELECT table_log_restore_table('test', 'id', 'test_log', 'trigger_id', 'test_recover', NOW(), '2', NULL::int, 1);
-                                                                                                                 table_log_restore_table                                                                                                                  
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- \x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F
+ table_log_restore_table 
+-------------------------
+ test_recover
 (1 row)
 
 SELECT id, name FROM test_recover;
